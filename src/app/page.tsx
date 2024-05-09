@@ -1,19 +1,21 @@
 import { ChatComponent } from "@/components/chat-component";
-import { LLMMessage } from "@/components/llm-message";
+import { InputMessage } from "@/components/input-message";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center p-24">
+    <main className="container max-w-2xl flex min-h-screen flex-col items-center">
       <h1
-        className="text-5xl font-bold bg-gradient-to-r bg-clip-text text-transparent
-      pb-20 from-cyan-700 to-fuchsia-700"
+        className="pt-24 text-5xl font-bold bg-gradient-to-r bg-clip-text
+        text-transparent from-cyan-700 to-fuchsia-700"
       >
         LOCAL RAG APP
       </h1>
 
-      <LLMMessage content="Hello, I'm helpful nutrition assistant" />
+      <div className="pt-10 w-full">
+        <ChatComponent />
+      </div>
 
-      <ChatComponent />
+      <InputMessage />
     </main>
   );
 }

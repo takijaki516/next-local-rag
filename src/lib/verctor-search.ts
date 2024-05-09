@@ -18,6 +18,7 @@ export async function vectorSearch(query: string) {
       body: JSON.stringify(prompt),
     });
 
+    // TODO: handle error
     if (!response.ok) {
       //
     }

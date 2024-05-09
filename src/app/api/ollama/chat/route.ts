@@ -1,4 +1,4 @@
-import { AIPayload, AIStream } from "@/lib/ai-stream";
+import { AIPayload, OpenAIStream } from "@/lib/openai-stream";
 
 // export const runtime = "edge";
 
@@ -9,6 +9,7 @@ export async function POST(req: Request) {
     return new Response("prompt is required", { status: 400 });
   }
 
+  // docs top5 relative to users query
   const augmentedSystemPrompt = `you are a kind and helpful nutritionist.
 Here are some useful resources for you and its delimited by a "*" symbol:
 * ${docs[0].content}
@@ -23,8 +24,9 @@ Think step by step and provide clear answer.
 This is very important for the user so take your time and try your best to help the user!
 `;
 
+  // TODO: add chat history
   const body: AIPayload = {
-    model: "mistral",
+    model: "llama3",
     messages: [
       { role: "system", content: augmentedSystemPrompt },
       { role: "user", content: prompt },
@@ -32,8 +34,9 @@ This is very important for the user so take your time and try your best to help 
     stream: true,
   };
 
-  const stream = await AIStream(body);
+  const stream = await OpenAIStream(body);
 
+  // return stream response (SSE)
   return new Response(stream, {
     headers: new Headers({ "Cache-Control": "no-cache" }),
   });

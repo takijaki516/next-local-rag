@@ -4,7 +4,7 @@ import {
   type ReconnectInterval,
 } from "eventsource-parser";
 
-export type AIAgent = "user" | "system" | "agent";
+export type AIAgent = "user" | "system";
 export type AIMessage = {
   role: AIAgent;
   content: string;
@@ -16,10 +16,11 @@ export interface AIPayload {
   stream: boolean;
 }
 
-export async function AIStream(payload: AIPayload) {
+export async function OpenAIStream(payload: AIPayload) {
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();
 
+  //  stream
   const res = await fetch("http://localhost:11434/v1/chat/completions", {
     headers: {
       "Content-Type": "application/json",
@@ -29,8 +30,8 @@ export async function AIStream(payload: AIPayload) {
     body: JSON.stringify(payload),
   });
 
+  // REVIEW:
   const readableStream = new ReadableStream({
-    // REVIEW:
     async start(controller) {
       const onParse = (event: ParseEvent | ReconnectInterval) => {
         if (event.type === "event") {
@@ -39,6 +40,7 @@ export async function AIStream(payload: AIPayload) {
         }
       };
 
+      // optimistic error handling
       if (res.status !== 200) {
         // const data = {
         //   status: res.status,
@@ -49,6 +51,7 @@ export async function AIStream(payload: AIPayload) {
         return;
       }
 
+      // REVIEW:
       // read chunks and invoke an event for each SSE event stream
       const parser = createParser(onParse);
 
@@ -61,6 +64,7 @@ export async function AIStream(payload: AIPayload) {
   const transformStream = new TransformStream({
     async transform(chunk, controller) {
       const data = decoder.decode(chunk);
+
       if (data === "[DONE]") {
         controller.terminate();
         return;
@@ -70,6 +74,7 @@ export async function AIStream(payload: AIPayload) {
         const json = JSON.parse(data);
         const text = json.choices[0].delta?.content || "";
         const payload = { text };
+
         controller.enqueue(
           encoder.encode(`data: ${JSON.stringify(payload)}\n\n`)
         );

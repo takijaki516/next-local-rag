@@ -1,9 +1,7 @@
 import path from "node:path";
-import fs from "node:fs";
-import { Document } from "langchain/document";
+import { Ollama } from "ollama";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { PDFLoader } from "langchain/document_loaders/fs/pdf";
-import { Ollama } from "ollama";
 
 import { prismaDB } from "../src/lib/prismaDB";
 
