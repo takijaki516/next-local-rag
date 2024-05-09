@@ -9,8 +9,8 @@ import {
 } from "react";
 
 interface IMessage {
-  user: "User" | "LLM";
-  content: string;
+  question: string;
+  LLM: string;
 }
 
 interface IMessageContext {
@@ -25,13 +25,7 @@ export const MessageProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [messages, setMessages] = useState<IMessage[]>([
-    {
-      user: "LLM",
-      content:
-        "Hello, I am a helpful nutrition assistant. How can I help you today?",
-    },
-  ]);
+  const [messages, setMessages] = useState<IMessage[]>([]);
 
   return (
     <MessageContext.Provider

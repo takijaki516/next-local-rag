@@ -7,16 +7,20 @@ import { useMessagesContext } from "./message-contenxt";
 export const ChatComponent = () => {
   const { messages } = useMessagesContext();
 
+  if (messages.length === 0) {
+    return <LLMMessage content="Hello! I'm a helpful nutrition expert" />;
+  }
+
   return (
     <div className="flex flex-col min-w-fit">
-      {/* TODO: fix ui */}
-      <div className="flex flex-col space-y-2 divide-y">
+      <div className="flex flex-col space-y-2 divide-y-2">
         {messages.map((message, index) => {
-          if (message.user === "User") {
-            return <UserMessage key={index} content={message.content} />;
-          } else {
-            return <LLMMessage key={index} content={message.content} />;
-          }
+          return (
+            <div key={index}>
+              <UserMessage content={message.question} />
+              <LLMMessage content={message.LLM} />
+            </div>
+          );
         })}
       </div>
     </div>

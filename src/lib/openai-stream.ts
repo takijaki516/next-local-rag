@@ -65,6 +65,7 @@ export async function OpenAIStream(payload: AIPayload) {
     async transform(chunk, controller) {
       const data = decoder.decode(chunk);
 
+      // NOTE: this might change in the future based on OpenAI response
       if (data === "[DONE]") {
         controller.terminate();
         return;
@@ -73,6 +74,7 @@ export async function OpenAIStream(payload: AIPayload) {
       try {
         const json = JSON.parse(data);
         const text = json.choices[0].delta?.content || "";
+
         const payload = { text };
 
         controller.enqueue(

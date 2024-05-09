@@ -10,7 +10,7 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "local rag",
   description:
-    "local rag app using next(with app router), prisma(with pgvector), ollama(mistral)",
+    "local rag app using next(with app router), prisma(with pgvector), llama3",
 };
 
 export default function RootLayout({

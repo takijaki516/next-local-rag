@@ -1,5 +1,5 @@
-import { ChatComponent } from "@/components/chat-component";
-import { InputMessage } from "@/components/input-message";
+import { ChatComponent } from "@/components/chats";
+import { InputMessage } from "@/components/user-query";
 
 export default function Home() {
   return (

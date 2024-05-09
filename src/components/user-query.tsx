@@ -12,17 +12,18 @@ import {
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { useMessagesContext } from "./message-contenxt";
+import { AutosizeTextarea } from "./autosize-textarea";
 
 export const InputMessage = () => {
   const [inputMsg, setInputMsg] = useState("");
   const [loading, setLoading] = useState(false);
-  const { messages, setMessages } = useMessagesContext();
+  const { setMessages } = useMessagesContext();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
 
-    // similarity search
+    // vector similarity search
     const similarityResults = await vectorSearch(inputMsg);
 
     const augmentedPrompt = {
@@ -50,25 +51,20 @@ export const InputMessage = () => {
     }
 
     let firstFlag = true;
-
     const parseLLM = (event: ParsedEvent | ReconnectInterval) => {
       if (event.type === "event") {
         const data = event.data;
 
         try {
           const text = JSON.parse(data).text ?? "";
-          console.log(
-            "🚀 ~ file: input-message.tsx:60 ~ parseLLM ~ text:",
-            text
-          );
 
           setMessages((prev) => {
             const newChat = [...prev];
 
             if (!firstFlag) {
-              newChat[newChat.length - 1].content += text;
+              newChat[newChat.length - 1].LLM += text;
             } else {
-              newChat.push({ user: "LLM", content: text });
+              newChat.push({ question: inputMsg, LLM: text });
               firstFlag = false;
             }
             return newChat;
@@ -93,6 +89,7 @@ export const InputMessage = () => {
       parser.feed(chunkValue);
     }
 
+    setInputMsg("");
     setLoading(false);
   };
 
@@ -101,23 +98,25 @@ export const InputMessage = () => {
       className="flex w-full rounded-md pt-10 pb-20 min-h-10 gap-x-2"
       onSubmit={handleSubmit}
     >
-      <Textarea
-        value={inputMsg}
-        onChange={(e) => setInputMsg(e.target.value)}
-        className="rounded-md outline-none"
-        placeholder="ask LLM"
-      />
+      <div className="relative flex w-full">
+        <AutosizeTextarea
+          value={inputMsg}
+          onChange={(e) => setInputMsg(e.target.value)}
+          className="pr-14 placeholder:text-lg text-lg"
+          placeholder="ask LLM"
+        />
 
-      <div>
-        {loading ? (
-          <Button disabled variant={"ghost"} className="h-full">
-            <Loader2 className="h-6 w-6 animate-spin" />
-          </Button>
-        ) : (
-          <Button variant={"ghost"} className="h-full">
-            <Send className="h-6 w-6" />
-          </Button>
-        )}
+        <div className="absolute right-2 bottom-2">
+          {loading ? (
+            <Button disabled variant={"ghost"} className="h-full">
+              <Loader2 className="h-6 w-6 animate-spin" />
+            </Button>
+          ) : (
+            <Button variant={"ghost"} className="h-full">
+              <Send className="h-6 w-6" />
+            </Button>
+          )}
+        </div>
       </div>
     </form>
   );
